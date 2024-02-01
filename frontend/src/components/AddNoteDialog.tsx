@@ -58,6 +58,7 @@ async function onSubmit(input:NoteInput){
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        
       
         <Button type="submit" form="addNoteForm" disabled={isSubmitting}>
  save
