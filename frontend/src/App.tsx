@@ -5,14 +5,15 @@ import './App.css';
 import Note  from './components/Note';
 import {Note as NoteModel } from './models/note';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-// import styles from "./style/Note.modules.css";
+import styles from "./styles/NotePage.modules.css";
 import * as NotesApi from "./network/notes_api";
 import AddNoteDialog from "./components/AddNoteDialog";
 import styleUtils from "./styles/utils.module.css";
+// import * as NoteApi from "./network/notes_api";
 
 function App() {
   // const [clickCount, setClickCount] = useState(0);
-  const [note, setNote] = useState<NoteModel[]>([]);
+  const [notes, setNote] = useState<NoteModel[]>([]);
   const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
 
   // 3.05 MIN
@@ -34,7 +35,19 @@ function App() {
       getData();
   }, [])
 
-
+  // THIS function has an aim to delete specified note through its id;
+  async function deleteNote(note:NoteModel){
+    try {
+      await NotesApi.deleteNote(note._id)
+      // you should filter out through all items, and should upadate the DB after deleted of the specified note!
+      // setNote(note.filter(existingNotes => existingNotes._id !== note._id))
+      setNote(notes.filter(existingNote => existingNote._id !== note._id))
+    }
+    catch(err){
+      console.error(err);
+      alert(err)
+    }
+  }
   return (
     <Container >
     <Button
@@ -43,9 +56,12 @@ function App() {
       {/* extra small, medium, extra large */}
       <Row xs={1} md={2} xl={3} className="g-4">
         {
-          note.map( note => (
+          notes.map( note => (
       <Col key={note._id} >
-      <Note note={note} />
+      <Note note={note}
+      className={styles.note}
+      onDeleteNote={deleteNote}
+      />
       {/* <Button><i className="bi bi-trash"></i></Button> */}
         </Col>
     ))
@@ -54,7 +70,7 @@ function App() {
       {showAddNoteDialog  && <AddNoteDialog
       onDismiss={() => setShowAddNoteDialog(false)}
       onNoteSaved={(newNote) => {
-        setNote([...note, newNote])
+        setNote([...notes, newNote])
         setShowAddNoteDialog(false)
       }}
       />}

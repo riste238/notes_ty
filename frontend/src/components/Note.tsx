@@ -3,16 +3,19 @@ import styles from "../styles/Note.modules.css";
 
 import { Card } from "react-bootstrap";
 import { Note as NoteModel } from "../models/note";
-import {formatDate} from "../utils/formatDate";
+import { formatDate } from "../utils/formatDate";
 import { MdDeleteOutline } from "react-icons/md";
 import stylesUtils from "../styles/utils.module.css";
 
 interface NoteProps {
     note: NoteModel,
-    className?: string
+    className?: string,
+    onDeleteNote: (note: NoteModel) => void,
 }
 
-const Note = ({ note, className }:NoteProps) => {
+//Let's attempt to create delete function for each note. 
+
+const Note = ({ note, className, onDeleteNote }: NoteProps) => {
 
     const {
         title,
@@ -22,28 +25,32 @@ const Note = ({ note, className }:NoteProps) => {
     } = note;
 
     let createdUpdatedText: string;
-    if(updatedAt > createdAt){
+    if (updatedAt > createdAt) {
         createdUpdatedText = "Updated " + formatDate(updatedAt)
     }
     else {
         createdUpdatedText = "Created" + formatDate(createdAt);
     }
 
-    return (    
+    return (
         <Card className={`${styles.noteCard} ${className}`}>
             <Card.Body className={styles.cardBody}>
-            <Card.Title className={stylesUtils.flexCenter}>
-                {title}
-      <MdDeleteOutline className="text-muted ms-auto"/>
+                <Card.Title className={stylesUtils.flexCenter}>
+                    {title}
+                    <MdDeleteOutline className="text-muted ms-auto"
+                        onClick={(e) => { onDeleteNote(note);
+                            e.stopPropagation();
+                         }}
+                    />
 
-            </Card.Title>
-            <Card.Text className={styles.cardText}>
-                {text}
-            </Card.Text>
-            <p>{updatedAt}</p>
+                </Card.Title>
+                <Card.Text className={styles.cardText}>
+                    {text}
+                </Card.Text>
+                <p>{updatedAt}</p>
             </Card.Body>
             <Card.Footer className="text-muted">
-              {createdUpdatedText}
+                {createdUpdatedText}
             </Card.Footer>
         </Card>
     )
